@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class MovieViewModel(
@@ -25,16 +26,20 @@ class MovieViewModel(
         fetchPopularMovies()
     }
 
-    // fetch movies from the API
+    // fetch movies from the API + sort descending by popularity
     private fun fetchPopularMovies() {
         viewModelScope.launch(Dispatchers.IO) {
             movieRepository
                 .fetchMovies()               // Flow<List<Movie>>
+                .map { movies ->
+                    // urutkan berdasarkan popularity dari terbesar ke terkecil
+                    movies.sortedByDescending { it.popularity }
+                }
                 .catch { e ->
                     _error.value = "An exception occurred: ${e.message}"
                 }
-                .collect { movies ->
-                    _popularMovies.value = movies
+                .collect { sortedMovies ->
+                    _popularMovies.value = sortedMovies
                 }
         }
     }
