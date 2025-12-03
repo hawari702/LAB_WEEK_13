@@ -18,6 +18,7 @@ constraintlayout = "2.2.1"
 materialVersion = "1.7.0"
 recyclerview = "1.4.0"
 retrofit = "3.0.0"
+moshi = "1.15.1"              # ⬅️ TAMBAH INI
 
 [libraries]
 androidx-appcompat-v151 = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }
@@ -41,6 +42,10 @@ androidx-activity = { group = "androidx.activity", name = "activity", version.re
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 material-v170 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+
+moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }              # ⬅️ TAMBAH
+moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }  # ⬅️ TAMBAH
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
