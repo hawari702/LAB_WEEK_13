@@ -1,0 +1,60 @@
+1. Why is MVVM important? Which files represent Model, View, and ViewModel?
+
+MVVM (Model–View–ViewModel) penting karena memisahkan tanggung jawab aplikasi sehingga:
+Kode lebih rapi dan terstruktur
+Lebih mudah dirawat dan dikembangkan
+UI tidak bergantung langsung pada logika bisnis atau data source
+Pemetaan file di project kamu:
+Model
+Movie.kt → data model
+MovieDao.kt, MovieDatabase.kt → Room database
+View
+MainActivity.kt
+activity_main.xml
+RecyclerView + layout item
+ViewModel
+MovieViewModel.kt → mengelola data UI menggunakan StateFlow
+
+2. In Part 1, you implemented Data Binding. Why is this more efficient than the normal method?
+Data Binding lebih efisien karena:
+Mengurangi penggunaan findViewById
+Menghilangkan banyak kode observer manual
+UI otomatis ter-update saat data berubah
+Mengurangi boilerplate code di Activity
+Dengan Data Binding:
+View langsung terhubung ke ViewModel
+Perubahan data → UI update otomatis tanpa logika tambahan
+
+3. In Part 2, you implemented the Singleton Pattern. Why is this important?
+Singleton Pattern penting untuk:
+Memastikan hanya satu instance database (MovieDatabase)
+Menghindari race condition dan konflik data
+Menghemat resource (memory & thread)
+Pada tutorial ini:
+MovieDatabase.getInstance() memastikan semua komponen memakai database yang sama
+
+4. In Part 2 & 3, you implemented the Repository Pattern. Why is this important?
+Repository Pattern penting karena:
+Menjadi single source of truth untuk data
+Memisahkan data source (API, Database) dari UI
+Memudahkan testing dan pengembangan
+Di project:
+MovieRepository mengatur:
+Ambil data dari API
+Simpan & baca data dari Room
+ViewModel tidak perlu tahu data berasal dari mana
+
+5. In Part 3, you implemented Worker Manager. Is there another way to refresh your database besides using Worker?
+ada beberapa alternatif selain WorkManager:
+Manual refresh di ViewModel
+Fetch data setiap Activity dibuka
+Pull-to-refresh
+User menarik layar untuk update data
+Foreground Service
+Untuk task real-time (kurang efisien untuk data periodik)
+Periodic API call saat app aktif
+Menggunakan coroutine + timer
+Namun, WorkManager adalah pilihan terbaik karena:
+Tetap berjalan walau app ditutup
+Hemat baterai
+Mengikuti kondisi sistem (network, charging, dll)
