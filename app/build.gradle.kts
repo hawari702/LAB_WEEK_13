@@ -56,6 +56,9 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.retrofit)
     implementation(libs.converter.moshi)
+    // WorkManager (KTX)
+    implementation("androidx.work:work-runtime-ktx:2.10.0")
+
 
     // ✅ Room
     implementation("androidx.room:room-runtime:2.7.0")
