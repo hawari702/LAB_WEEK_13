@@ -1,17 +1,13 @@
-package com.example.test_lab_week_12
+package com.example.test_lab_week_13
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.RecyclerView
-import com.example.test_lab_week_12.model.Movie
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.launch
+import com.example.test_lab_week_13.databinding.ActivityMainBinding
+import com.example.test_lab_week_13.model.Movie
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,12 +23,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        val recyclerView: RecyclerView = findViewById(R.id.movie_list)
-        recyclerView.adapter = movieAdapter
+        val binding: ActivityMainBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        val movieRepository = (application as MovieApplication).movieRepository
+        binding.lifecycleOwner = this
+        binding.movieList.adapter = movieAdapter
+
+        val movieRepository =
+            (application as MovieApplication).movieRepository
 
         movieViewModel = ViewModelProvider(
             this,
@@ -47,30 +46,9 @@ class MainActivity : AppCompatActivity() {
             }
         )[MovieViewModel::class.java]
 
-        // lifecycleScope is a lifecycle-aware coroutine scope
-        lifecycleScope.launch {
-            // run when Activity at least STARTED
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                // collect movies
-                launch {
-                    movieViewModel.popularMovies.collect { movies ->
-                        movieAdapter.addMovies(movies)
-                    }
-                }
-                // collect error
-                launch {
-                    movieViewModel.error.collect { errorMsg ->
-                        if (errorMsg.isNotEmpty()) {
-                            Snackbar.make(
-                                recyclerView,
-                                errorMsg,              // sekarang String normal
-                                Snackbar.LENGTH_LONG
-                            ).show()
-                        }
-                    }
-                }
-            }
-        }
+        // 🔥 INI PENTING
+        binding.viewModel = movieViewModel
+        binding.lifecycleOwner = this
     }
 
     private fun openMovieDetails(movie: Movie) {
