@@ -1,37 +1,33 @@
-package com.example.test_lab_week_13
+    package com.example.test_lab_week_13
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.example.test_lab_week_13.api.MovieService
-import com.example.test_lab_week_13.model.Movie
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+    import com.example.test_lab_week_13.api.MovieService
+    import com.example.test_lab_week_13.database.MovieDatabase
+    import com.example.test_lab_week_13.model.Movie
+    import kotlinx.coroutines.Dispatchers
+    import kotlinx.coroutines.flow.Flow
+    import kotlinx.coroutines.flow.flow
+    import kotlinx.coroutines.flow.flowOn
 
-class MovieRepository(private val movieService: MovieService) {
-    private val apiKey = "4dddd41c0f7438ae8e32cae9574058fa"
+    class MovieRepository(
+        private val movieService: MovieService,
+        private val movieDatabase: MovieDatabase,
+        private val apiKey: String
+    ) {
 
-    // LiveData that contains a list of movies
-    private val movieLiveData = MutableLiveData<List<Movie>>()
-    val movies: LiveData<List<Movie>>
-        get() = movieLiveData
+        private val movieDao = movieDatabase.movieDao()
 
-    // LiveData that contains an error message
-    private val errorLiveData = MutableLiveData<String>()
-    val error: LiveData<String>
-        get() = errorLiveData
-    // fetch movies from the API
-    // fetch movies from the API
-// this function returns a Flow of Movie objects
-// a Flow is a type of coroutine that can emit multiple values
-// for more info, see: https://kotlinlang.org/docs/flow.html#flows
-    fun fetchMovies(): Flow<List<Movie>> {
-        return flow {
-            // emit the list of popular movies from the API
-            emit(movieService.getPopularMovies(apiKey).results)
-            // use Dispatchers.IO to run this coroutine on a shared pool of threads
-            // use Dispatchers.IO to run this coroutine on a shared pool of threads
+        fun fetchMovies(): Flow<List<Movie>> = flow {
+            // ambil data sekali dari DB
+            val savedMovies = movieDao.getMoviesOnce()
+
+            if (savedMovies.isEmpty()) {
+                val movies = movieService.getPopularMovies(apiKey).results
+                movieDao.addMovies(movies)
+                emit(movies)
+            } else {
+                emit(savedMovies)
+            }
         }.flowOn(Dispatchers.IO)
+
+        fun getMoviesFromDb(): Flow<List<Movie>> = movieDao.getMoviesFlow()
     }
-}
